@@ -1,19 +1,18 @@
-import { Routes,Route } from 'react-router-dom'
-import './App.css'
-import Home from './pages/Home'
-import Peliculas from './pages/Peliculas'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Peliculas from "./pages/Peliculas";
+import Reservas from "./pages/Reservas";
+import Login from "./pages/Login";
 
 function App() {
-
-
   return (
-    <Routes>
-      <Route path='/' element={<Home />}></Route>
-      <Route path='/login' element={<Login/>}></Route>
-      <Route path='/Peliculas' element={<Peliculas/>}/>
-      //<Route path='/Dashboard' element={<Dashboard/>}></Route>
-    </Routes>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/peliculas" element={<Peliculas />} />
+        <Route path="/reservas" element={<Reservas />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
