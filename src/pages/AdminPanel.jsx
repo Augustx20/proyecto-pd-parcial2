@@ -7,16 +7,15 @@ const AdminPanel = () => {
   const [duracion, setDuracion] = useState("");
 
   useEffect(() => {
-    setPeliculas([
-      { id: 1, titulo: 'Matrix', genero: 'Ciencia Ficción', duracion: 136 },
-      { id: 2, titulo: 'El Padrino', genero: 'Drama', duracion: 175 },
-      { id: 3, titulo: 'Interestelar', genero: 'Ciencia Ficción', duracion: 169 }
-    ]);
+    const storedPeliculas = JSON.parse(localStorage.getItem("peliculas")) || [];
+    setPeliculas(storedPeliculas);
   }, []);
 
   const eliminar = (id) => {
     if (confirm("¿Seguro que querés eliminar esta película?")) {
-      setPeliculas(peliculas.filter(p => p.id !== id));
+      const nuevasPeliculas = peliculas.filter(p => p.id !== id);
+      setPeliculas(nuevasPeliculas);
+      localStorage.setItem("peliculas", JSON.stringify(nuevasPeliculas));
     }
   };
 
@@ -29,7 +28,9 @@ const AdminPanel = () => {
         genero,
         duracion: parseInt(duracion)
       };
-      setPeliculas([...peliculas, nuevaPelicula]);
+      const nuevasPeliculas = [...peliculas, nuevaPelicula];
+      setPeliculas(nuevasPeliculas);
+      localStorage.setItem("peliculas", JSON.stringify(nuevasPeliculas));
       setTitulo("");
       setGenero("");
       setDuracion("");

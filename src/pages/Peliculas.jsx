@@ -1,20 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const peliculasMock = [
-  { id: 1, titulo: 'Matrix', genero: 'Ciencia Ficción', duracion: 136 },
-  { id: 2, titulo: 'El Padrino', genero: 'Drama', duracion: 175 },
-  { id: 3, titulo: 'Interestelar', genero: 'Ciencia Ficción', duracion: 169 }
-]
-
 function Peliculas() {
     const [user, setUser] = useState(null);
-    const [Peliculas, setPeliculas] = useState(peliculasMock);
+    const [Peliculas, setPeliculas] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem('loggedUser'));
         setUser(storedUser);
+
+        const storedPeliculas = JSON.parse(localStorage.getItem('peliculas')) || [];
+        setPeliculas(storedPeliculas);
     }, []);
 
     const reservar = (pelicula) => {
@@ -24,7 +21,9 @@ function Peliculas() {
 
     const eliminar = (id) => {
         if (confirm('Estas seguro que queres eliminar esta pelicula?')) {
-            setPeliculas(Peliculas.filter(p => p.id !== id));
+            const nuevasPeliculas = Peliculas.filter(p => p.id !== id);
+            setPeliculas(nuevasPeliculas);
+            localStorage.setItem('peliculas', JSON.stringify(nuevasPeliculas));
         }
     }
 
