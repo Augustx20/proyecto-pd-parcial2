@@ -1,48 +1,63 @@
 import { useState, useEffect } from "react";
 
-const AdminPanel = () => {
+function AdminPanel() {
   const [peliculas, setPeliculas] = useState([]);
   const [titulo, setTitulo] = useState("");
   const [genero, setGenero] = useState("");
   const [duracion, setDuracion] = useState("");
 
   useEffect(() => {
-    const storedPeliculas = JSON.parse(localStorage.getItem("peliculas")) || [];
-    setPeliculas(storedPeliculas);
+    fetchPeliculas();
   }, []);
 
-  const eliminar = (id) => {
-    if (confirm("¿Seguro que querés eliminar esta película?")) {
-      const nuevasPeliculas = peliculas.filter(p => p.id !== id);
-      setPeliculas(nuevasPeliculas);
-      localStorage.setItem("peliculas", JSON.stringify(nuevasPeliculas));
+  const fetchPeliculas = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/peliculas");
+      const data = await response.json();
+      setPeliculas(data);
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  const agregarPelicula = (e) => {
+  const agregarPelicula = async (e) => {
     e.preventDefault();
-    if (titulo && genero && duracion) {
-      const nuevaPelicula = {
-        id: Date.now(),
-        titulo,
-        genero,
-        duracion: parseInt(duracion)
-      };
-      const nuevasPeliculas = [...peliculas, nuevaPelicula];
-      setPeliculas(nuevasPeliculas);
-      localStorage.setItem("peliculas", JSON.stringify(nuevasPeliculas));
+    try {
+      const response = await fetch("http://localhost:5000/api/peliculas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ titulo, genero, duracion: parseInt(duracion) }),
+      });
+      const data = await response.json();
+      setPeliculas(data);
       setTitulo("");
       setGenero("");
       setDuracion("");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const eliminarPelicula = async (id) => {
+    if (confirm("¿Seguro que querés eliminar esta película?")) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/peliculas/${id}`, {
+          method: "DELETE",
+        });
+        const data = await response.json();
+        setPeliculas(data);
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <div style={{ padding: "2rem" }}>
       <h2>Panel de Administración</h2>
 
       <h3>Agregar Nueva Película</h3>
-      <form onSubmit={agregarPelicula} style={{ marginBottom: '2rem' }}>
+      <form onSubmit={agregarPelicula} style={{ marginBottom: "2rem" }}>
         <input
           type="text"
           placeholder="Título"
@@ -69,9 +84,9 @@ const AdminPanel = () => {
 
       <ul>
         {peliculas.map((peli) => (
-          <li key={peli.id} style={{ marginBottom: '1rem' }}>
+          <li key={peli.id} style={{ marginBottom: "1rem" }}>
             <strong>{peli.titulo}</strong> ({peli.genero}) - {peli.duracion} min
-            <button onClick={() => eliminar(peli.id)} style={{ marginLeft: '1rem' }}>
+            <button onClick={() => eliminarPelicula(peli.id)} style={{ marginLeft: "1rem" }}>
               Eliminar
             </button>
           </li>
@@ -79,6 +94,6 @@ const AdminPanel = () => {
       </ul>
     </div>
   );
-};
+}
 
 export default AdminPanel;
