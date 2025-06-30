@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
 
 function Reservas() {
   const [reservas, setReservas] = useState([]);
@@ -12,7 +13,12 @@ function Reservas() {
 
   const fetchReservas = async (usuario) => {
     try {
-      const response = await fetch("http://localhost:5000/api/reservas");
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:5000/api/reservas",{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       const data = await response.json();
       const reservasFiltradas = data.filter(res => res.username === usuario.username);
       setReservas(reservasFiltradas);
@@ -23,6 +29,7 @@ function Reservas() {
 
   return (
     <div style={{ padding: "2rem" }}>
+      <Navbar />
       <h2>Mis Reservas</h2>
       {reservas.length > 0 ? (
         <ul>

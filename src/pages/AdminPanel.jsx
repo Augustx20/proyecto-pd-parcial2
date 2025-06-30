@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Navbar from "../components/Navbar";
 
 function AdminPanel() {
   const [peliculas, setPeliculas] = useState([]);
@@ -54,6 +55,7 @@ function AdminPanel() {
 
   return (
     <div style={{ padding: "2rem" }}>
+      <Navbar />
       <h2>Panel de Administración</h2>
 
       <h3>Agregar Nueva Película</h3>

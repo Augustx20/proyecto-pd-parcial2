@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 function Peliculas() {
   const [user, setUser] = useState(null);
@@ -14,7 +15,12 @@ function Peliculas() {
 
   const fetchPeliculas = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/peliculas");
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:5000/api/peliculas", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       const data = await response.json();
       setPeliculas(data);
     } catch (err) {
@@ -24,9 +30,12 @@ function Peliculas() {
 
   const reservar = async (pelicula) => {
     try {
+      const token = localStorage.getItem("token");
       await fetch("http://localhost:5000/api/reservas", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify({
           ...pelicula,
           username: user?.username,
@@ -39,7 +48,9 @@ function Peliculas() {
   };
 
   return (
+
     <div style={{ padding: "2rem" }}>
+      <Navbar />
       <h2>Cartelera</h2>
       <ul>
         {peliculas.map((peli) => (

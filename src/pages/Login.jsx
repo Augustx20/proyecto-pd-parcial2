@@ -20,6 +20,7 @@ function Login() {
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem("loggedUser", JSON.stringify(data.user));
+        localStorage.setItem("token", data.token);
 
         if (data.user.role === "admin") {
           navigate("/adminpanel");

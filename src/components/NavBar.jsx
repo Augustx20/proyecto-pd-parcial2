@@ -1,15 +1,25 @@
-import React from 'react'
+// Navbar.jsx con logout funcional
+import { useNavigate } from "react-router-dom";
 
-function NavBar() {
+function Navbar() {
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("loggedUser"));
+
+  const logout = () => {
+    localStorage.removeItem("loggedUser");
+    navigate("/");
+  };
+
   return (
-    <div>
-      <ul>
-        <li>Home</li>
-        <li>About</li>
-        <li>Contact</li>
-      </ul>
-    </div>
-  )
+    <nav style={{ padding: "1rem", backgroundColor: "#eee", marginBottom: "2rem" }}>
+      {user && (
+        <>
+          <span style={{ marginRight: "1rem" }}>Bienvenido, {user.username}</span>
+          <button onClick={logout}>Cerrar sesión</button>
+        </>
+      )}
+    </nav>
+  );
 }
 
-export default NavBar
+export default Navbar;
