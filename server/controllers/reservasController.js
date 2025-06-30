@@ -17,7 +17,8 @@ const guardarReservas = (reservas) => {
 };
 
 export const registrarReserva = (req, res) => {
-  const { id, titulo, genero, duracion, username } = req.body;
+  const { id, titulo, genero, duracion } = req.body;
+  const username = req.user.username;
 
   if (!id || !titulo || !username) {
     return res.status(400).json({ success: false, message: "Datos incompletos" });

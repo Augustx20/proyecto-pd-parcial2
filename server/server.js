@@ -1,8 +1,12 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
 import peliculasRoutes from './routes/peliculasRoutes.js';
 import reservasRoutes from './routes/reservasRoutes.js';
+
+
 
 const app = express();
 app.use(cors());

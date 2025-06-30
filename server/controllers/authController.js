@@ -1,6 +1,9 @@
+
+import dotenv from "dotenv";
+dotenv.config();
 import jwt from "jsonwebtoken";
 
-const SECRET_KEY = "secretoSuperSeguro123"; // En producción, usá un archivo .env
+const SECRET_KEY = process.env.SECRET_KEY
 
 const users = [
   { username: "admin", password: "admin123", role: "admin" },
