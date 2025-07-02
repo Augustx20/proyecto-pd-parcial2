@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import jwt_decode from "jwt-decode";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 
 function Peliculas() {
   const [user, setUser] = useState(null);
@@ -9,24 +8,9 @@ function Peliculas() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      const decoded = jwt_decode(token);
-      const currentTime = Date.now() / 1000;
-
-      if (decoded.exp < currentTime) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("loggedUser");
-        navigate("/");
-      } else {
-        const storedUser = JSON.parse(localStorage.getItem("loggedUser"));
-        setUser(storedUser);
-        fetchPeliculas();
-      }
-    } else {
-      navigate("/");
-    }
+    const storedUser = JSON.parse(localStorage.getItem("loggedUser"));
+    setUser(storedUser);
+    fetchPeliculas();
   }, []);
 
   const fetchPeliculas = async () => {
@@ -49,17 +33,29 @@ function Peliculas() {
     try {
       const token = localStorage.getItem("token");
 
-      await fetch("http://localhost:5000/api/reservas", {
+      console.log("Enviando reserva al backend:", pelicula);
+
+      const response = await fetch("http://localhost:5000/api/reservas", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          ...pelicula,
+          id: pelicula.id,
+          titulo: pelicula.titulo,
+          genero: pelicula.genero,
+          duracion: pelicula.duracion,
         }),
       });
-      navigate("/reservas");
+
+      if (response.ok) {
+        console.log("Reserva registrada correctamente");
+        await fetchPeliculas(); 
+        navigate("/reservas");  
+      } else {
+        console.error("Error al registrar reserva");
+      }
     } catch (err) {
       console.error("Error al registrar reserva:", err);
     }
@@ -73,10 +69,18 @@ function Peliculas() {
         {peliculas.map((peli) => (
           <li key={peli.id} style={{ marginBottom: "1rem" }}>
             <strong>{peli.titulo}</strong> ({peli.genero}) - {peli.duracion} min
-            {user?.role === "user" && (
-              <button onClick={() => reservar(peli)} style={{ marginLeft: "1rem" }}>
-                Reservar
-              </button>
+
+            {peli.disponible === 0 ? (
+              <span style={{ color: "red", marginLeft: "1rem" }}>No disponible</span>
+            ) : (
+              user?.role === "user" && (
+                <button
+                  onClick={() => reservar(peli)}
+                  style={{ marginLeft: "1rem" }}
+                >
+                  Reservar
+                </button>
+              )
             )}
           </li>
         ))}

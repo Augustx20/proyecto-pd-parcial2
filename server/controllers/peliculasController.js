@@ -1,24 +1,13 @@
-import fs from "fs";
-import path from "path";
-
-const filePathPeliculas = path.resolve("server/data/peliculas.json");
-
-const leerPeliculas = () => {
-  try {
-    const data = fs.readFileSync(filePathPeliculas, "utf-8");
-    return JSON.parse(data);
-  } catch {
-    return [];
-  }
-};
-
-const guardarPeliculas = (peliculas) => {
-  fs.writeFileSync(filePathPeliculas, JSON.stringify(peliculas, null, 2));
-};
+import connection from "../db.js";
 
 export const getPeliculas = (req, res) => {
-  const peliculas = leerPeliculas();
-  res.json(peliculas);
+  connection.query("SELECT * FROM peliculas", (err, results) => {
+    if (err) {
+      console.error("Error al obtener películas:", err);
+      return res.status(500).json({ success: false, message: "Error en el servidor" });
+    }
+    res.json(results);
+  });
 };
 
 export const agregarPelicula = (req, res) => {
@@ -28,23 +17,25 @@ export const agregarPelicula = (req, res) => {
     return res.status(400).json({ success: false, message: "Datos incompletos" });
   }
 
-  const peliculas = leerPeliculas();
-  const nueva = {
-    id: Date.now(),
-    titulo,
-    genero,
-    duracion,
-  };
-
-  peliculas.push(nueva);
-  guardarPeliculas(peliculas);
-  res.json(peliculas);
+  const sql = "INSERT INTO peliculas (titulo, genero, duracion) VALUES (?, ?, ?)";
+  connection.query(sql, [titulo, genero, duracion], (err, result) => {
+    if (err) {
+      console.error("Error al agregar película:", err);
+      return res.status(500).json({ success: false, message: "Error en el servidor" });
+    }
+    res.json({ success: true, id: result.insertId });
+  });
 };
 
 export const eliminarPelicula = (req, res) => {
   const id = parseInt(req.params.id);
-  let peliculas = leerPeliculas();
-  peliculas = peliculas.filter((p) => p.id !== id);
-  guardarPeliculas(peliculas);
-  res.json(peliculas);
+
+  const sql = "DELETE FROM peliculas WHERE id = ?";
+  connection.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error("Error al eliminar película:", err);
+      return res.status(500).json({ success: false, message: "Error en el servidor" });
+    }
+    res.json({ success: true });
+  });
 };

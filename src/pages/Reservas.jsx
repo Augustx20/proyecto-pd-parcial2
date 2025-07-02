@@ -1,35 +1,14 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import jwt_decode from "jwt-decode";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 
 function Reservas() {
   const [reservas, setReservas] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      const decoded = jwt_decode(token);
-      const currentTime = Date.now() / 1000;
-
-      if (decoded.exp < currentTime) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("loggedUser");
-        navigate("/");
-      } else {
-        const storedUser = JSON.parse(localStorage.getItem("loggedUser"));
-        if (storedUser) {
-          fetchReservas(storedUser);
-        }
-      }
-    } else {
-      navigate("/");
-    }
+    fetchReservas();
   }, []);
 
-  const fetchReservas = async (usuario) => {
+  const fetchReservas = async () => {
     try {
       const token = localStorage.getItem("token");
 
@@ -38,11 +17,30 @@ function Reservas() {
           Authorization: `Bearer ${token}`,
         },
       });
+
       const data = await response.json();
-      const reservasFiltradas = data.filter((res) => res.username === usuario.username);
-      setReservas(reservasFiltradas);
+      setReservas(data);
     } catch (err) {
       console.error("Error al obtener reservas:", err);
+    }
+  };
+
+  const cancelarReserva = async (reservaId) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(`http://localhost:5000/api/reservas/${reservaId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        fetchReservas(); // Actualiza la lista después de cancelar
+      }
+    } catch (err) {
+      console.error("Error al cancelar reserva:", err);
     }
   };
 
@@ -55,6 +53,12 @@ function Reservas() {
           {reservas.map((reserva) => (
             <li key={reserva.id}>
               {reserva.titulo} ({reserva.genero}) - {reserva.duracion} min
+              <button
+                onClick={() => cancelarReserva(reserva.id)}
+                style={{ marginLeft: "1rem" }}
+              >
+                Cancelar
+              </button>
             </li>
           ))}
         </ul>

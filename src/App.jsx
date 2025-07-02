@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import AdminPanel from "./pages/AdminPanel";
 import RutaPrivada from "./RutaPrivada";
 import RutaAdmin from "./RutaAdmin";
+import Register from "./pages/Register";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             <AdminPanel />
           </RutaAdmin>
         } />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </BrowserRouter>
   );

@@ -10,6 +10,7 @@ import reservasRoutes from './routes/reservasRoutes.js';
 
 const app = express();
 app.use(cors());
+console.log("SECRET_KEY:", process.env.SECRET_KEY);
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);

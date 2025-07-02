@@ -1,46 +1,44 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function Login() {
+function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("user"); // por defecto es "user"
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, role }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("loggedUser", JSON.stringify(data.user));
-        localStorage.setItem("token", data.token);
-
-        if (data.user.role === "admin") {
-          navigate("/adminpanel");
-        } else {
-          navigate("/peliculas");
-        }
+        setSuccess("Registro exitoso, ahora podés iniciar sesión");
+        setError("");
+        setTimeout(() => navigate("/"), 2000);
       } else {
-        setError(data.message || "Usuario o contraseña incorrectos");
+        setError(data.message || "Error al registrarse");
+        setSuccess("");
       }
     } catch (err) {
-      console.error(err);
       setError("Error al conectar con el servidor");
+      setSuccess("");
     }
   };
 
   return (
     <div style={{ padding: "2rem" }}>
-      <h2>Iniciar Sesión</h2>
-      <form onSubmit={handleLogin}>
+      <h2>Registrarse</h2>
+      <form onSubmit={handleRegister}>
         <div>
           <label>Usuario: </label>
           <input
@@ -59,11 +57,19 @@ function Login() {
             required
           />
         </div>
+        <div>
+          <label>Rol: </label>
+          <select value={role} onChange={(e) => setRole(e.target.value)}>
+            <option value="user">Usuario</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
         {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type="submit">Ingresar</button>
+        {success && <p style={{ color: "green" }}>{success}</p>}
+        <button type="submit">Registrarse</button>
       </form>
     </div>
   );
 }
 
-export default Login;
+export default Register;
