@@ -37,7 +37,7 @@ function Reservas() {
       });
 
       if (response.ok) {
-        fetchReservas(); // Actualiza la lista después de cancelar
+        fetchReservas();
       }
     } catch (err) {
       console.error("Error al cancelar reserva:", err);
@@ -52,7 +52,7 @@ function Reservas() {
         <ul>
           {reservas.map((reserva) => (
             <li key={reserva.id}>
-              {reserva.titulo} ({reserva.genero}) - {reserva.duracion} min
+              {reserva.titulo} - Butacas reservadas: {reserva.cantidad_butacas}
               <button
                 onClick={() => cancelarReserva(reserva.id)}
                 style={{ marginLeft: "1rem" }}

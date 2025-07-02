@@ -29,36 +29,8 @@ function Peliculas() {
     }
   };
 
-  const reservar = async (pelicula) => {
-    try {
-      const token = localStorage.getItem("token");
-
-      console.log("Enviando reserva al backend:", pelicula);
-
-      const response = await fetch("http://localhost:5000/api/reservas", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          id: pelicula.id,
-          titulo: pelicula.titulo,
-          genero: pelicula.genero,
-          duracion: pelicula.duracion,
-        }),
-      });
-
-      if (response.ok) {
-        console.log("Reserva registrada correctamente");
-        await fetchPeliculas(); 
-        navigate("/reservas");  
-      } else {
-        console.error("Error al registrar reserva");
-      }
-    } catch (err) {
-      console.error("Error al registrar reserva:", err);
-    }
+  const irSeleccionButacas = (peliculaId) => {
+    navigate(`/seleccion-butacas/${peliculaId}`);
   };
 
   return (
@@ -75,7 +47,7 @@ function Peliculas() {
             ) : (
               user?.role === "user" && (
                 <button
-                  onClick={() => reservar(peli)}
+                  onClick={() => irSeleccionButacas(peli.id)}
                   style={{ marginLeft: "1rem" }}
                 >
                   Reservar
