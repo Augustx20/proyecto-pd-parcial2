@@ -12,7 +12,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Register />} />
         <Route path="/peliculas" element={
           <RutaPrivada>
             <Peliculas />
@@ -28,7 +28,7 @@ function App() {
             <AdminPanel />
           </RutaAdmin>
         } />
-        <Route path="/register" element={<Register />} />
+        <Route path="/Login" element={<Login />} />
         <Route path="/butacas/:id" element={
           <RutaPrivada>
             <SeleccionButacas />
