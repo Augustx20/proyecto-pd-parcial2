@@ -1,17 +1,42 @@
-import { Routes,Route } from 'react-router-dom'
-import './App.css'
-import Home from './pages/Home'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Peliculas from "./pages/Peliculas";
+import Reservas from "./pages/Reservas";
+import Login from "./pages/Login";
+import AdminPanel from "./pages/AdminPanel";
+import RutaPrivada from "./RutaPrivada";
+import RutaAdmin from "./RutaAdmin";
+import Register from "./pages/Register";
+import SeleccionButacas from "./pages/SeleccionButacas";
 
 function App() {
-
-
   return (
-    <Routes>
-      <Route path='/' element={<Home />}></Route>
-      <Route path='/login' element={<Login/>}></Route>
-      <Route path='/Dashboard' element={<Dashboard/>}></Route>
-    </Routes>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/peliculas" element={
+          <RutaPrivada>
+            <Peliculas />
+          </RutaPrivada>
+        } />
+        <Route path="/reservas" element={
+          <RutaPrivada>
+            <Reservas />
+          </RutaPrivada>
+        } />
+        <Route path="/adminpanel" element={
+          <RutaAdmin>
+            <AdminPanel />
+          </RutaAdmin>
+        } />
+        <Route path="/register" element={<Register />} />
+        <Route path="/butacas/:id" element={
+          <RutaPrivada>
+            <SeleccionButacas />
+          </RutaPrivada>
+        } />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
