@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import fondo from "../assets/Sala_de_cine.jpg"; // Ajustá el path según dónde tengas la imagen
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -9,7 +10,6 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     try {
       const response = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
@@ -22,11 +22,7 @@ function Login() {
         localStorage.setItem("loggedUser", JSON.stringify(data.user));
         localStorage.setItem("token", data.token);
 
-        if (data.user.role === "admin") {
-          navigate("/adminpanel");
-        } else {
-          navigate("/peliculas");
-        }
+        navigate(data.user.role === "admin" ? "/adminpanel" : "/peliculas");
       } else {
         setError("Usuario o contraseña incorrectos");
       }
@@ -37,12 +33,27 @@ function Login() {
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
-      <div className="card p-4 shadow" style={{ width: "100%", maxWidth: "400px" }}>
-        <h2 className="mb-4 text-center">Iniciar Sesión</h2>
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundImage: `url(${fondo})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+      }}
+    >
+      <h1 className="text-white mb-4 shadow" style={{ textShadow: "2px 2px 4px black" }}>
+        CineBron's
+      </h1>
+
+      <div className="card p-4 shadow" style={{ width: "300px", backgroundColor: "rgba(255, 255, 255, 0.9)" }}>
+        <h2 className="mb-3 text-center">Iniciar Sesión</h2>
         <form onSubmit={handleLogin}>
           <div className="mb-3">
-            <label className="form-label">Usuario</label>
+            <label className="form-label">Usuario:</label>
             <input
               type="text"
               className="form-control"
@@ -51,9 +62,8 @@ function Login() {
               required
             />
           </div>
-
           <div className="mb-3">
-            <label className="form-label">Contraseña</label>
+            <label className="form-label">Contraseña:</label>
             <input
               type="password"
               className="form-control"
@@ -62,12 +72,8 @@ function Login() {
               required
             />
           </div>
-
           {error && <div className="alert alert-danger">{error}</div>}
-
-          <button type="submit" className="btn btn-primary w-100">
-            Ingresar
-          </button>
+          <button type="submit" className="btn btn-primary w-100">Ingresar</button>
         </form>
       </div>
     </div>

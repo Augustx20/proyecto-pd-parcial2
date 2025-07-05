@@ -22,7 +22,6 @@ export const reservarButacas = (req, res) => {
     return res.status(400).json({ success: false, message: "Datos inválidos" });
   }
 
-  // Paso 1: Obtener el ID del usuario
   const buscarUsuario = "SELECT id FROM usuarios WHERE username = ?";
   connection.query(buscarUsuario, [username], (err, userResults) => {
     if (err || userResults.length === 0) {
@@ -31,7 +30,7 @@ export const reservarButacas = (req, res) => {
 
     const usuarioId = userResults[0].id;
 
-    // Paso 2: Insertar en tabla reservas
+
     const sqlReserva = "INSERT INTO reservas (usuario_id, pelicula_id) VALUES (?, ?)";
     connection.query(sqlReserva, [usuarioId, peliculaId], (err, result) => {
       if (err) {
@@ -41,7 +40,6 @@ export const reservarButacas = (req, res) => {
 
       const reservaId = result.insertId;
 
-      // Paso 3: Asociar las butacas a la reserva
       const valores = butacas.map((butacaId) => [reservaId, butacaId]);
       const sqlButacas = "INSERT INTO reserva_butacas (reserva_id, butaca_id) VALUES ?";
 
@@ -51,7 +49,7 @@ export const reservarButacas = (req, res) => {
           return res.status(500).json({ success: false, message: "Error al asociar butacas" });
         }
 
-        // Paso 4: Marcar las butacas como ocupadas
+ 
         const sqlActualizar = `UPDATE butacas SET ocupada = 1 WHERE id IN (${butacas.map(() => "?").join(",")})`;
 
         connection.query(sqlActualizar, butacas, (err) => {
@@ -60,7 +58,7 @@ export const reservarButacas = (req, res) => {
             return res.status(500).json({ success: false, message: "Error al actualizar butacas" });
           }
 
-          // Paso 5: Verificar si ya no quedan butacas libres
+
           const sqlDisponibles = "SELECT COUNT(*) AS disponibles FROM butacas WHERE pelicula_id = ? AND ocupada = 0";
           connection.query(sqlDisponibles, [peliculaId], (err, disponiblesResults) => {
             if (err) {
@@ -71,7 +69,7 @@ export const reservarButacas = (req, res) => {
             const disponibles = disponiblesResults[0].disponibles;
 
             if (disponibles === 0) {
-              // Todas las butacas ocupadas, marcar película como no disponible
+
               const sqlNoDisponible = "UPDATE peliculas SET disponible = 0 WHERE id = ?";
               connection.query(sqlNoDisponible, [peliculaId], (err) => {
                 if (err) {

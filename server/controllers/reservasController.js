@@ -34,7 +34,7 @@ export const listarReservas = (req, res) => {
 export const cancelarReserva = (req, res) => {
   const reservaId = req.params.id;
 
-  // 1. Obtener las butacas asociadas a la reserva
+
   const obtenerButacas = "SELECT butaca_id, pelicula_id FROM reserva_butacas rb JOIN butacas b ON rb.butaca_id = b.id WHERE rb.reserva_id = ?";
   connection.query(obtenerButacas, [reservaId], (err, results) => {
     if (err || results.length === 0) {
@@ -44,28 +44,26 @@ export const cancelarReserva = (req, res) => {
     const butacasIds = results.map((b) => b.butaca_id);
     const peliculaId = results[0].pelicula_id;
 
-    // 2. Liberar esas butacas
     const liberarButacas = "UPDATE butacas SET ocupada = 0 WHERE id IN (?)";
     connection.query(liberarButacas, [butacasIds], (err) => {
       if (err) {
         return res.status(500).json({ success: false, message: "Error al liberar butacas" });
       }
 
-      // 3. Eliminar la asociación de butacas
+
       const eliminarAsociacion = "DELETE FROM reserva_butacas WHERE reserva_id = ?";
       connection.query(eliminarAsociacion, [reservaId], (err) => {
         if (err) {
           return res.status(500).json({ success: false, message: "Error al eliminar asociación" });
         }
 
-        // 4. Eliminar la reserva
         const eliminarReserva = "DELETE FROM reservas WHERE id = ?";
         connection.query(eliminarReserva, [reservaId], (err) => {
           if (err) {
             return res.status(500).json({ success: false, message: "Error al eliminar reserva" });
           }
 
-          // 5. Verificar si la película estaba marcada como no disponible
+ 
           const verificarButacas = "SELECT COUNT(*) AS disponibles FROM butacas WHERE pelicula_id = ? AND ocupada = 0";
           connection.query(verificarButacas, [peliculaId], (err, results) => {
             if (err) {
@@ -75,7 +73,7 @@ export const cancelarReserva = (req, res) => {
             const disponibles = results[0].disponibles;
 
             if (disponibles > 0) {
-              // Hay butacas libres, marcar película como disponible
+
               const actualizarPelicula = "UPDATE peliculas SET disponible = 1 WHERE id = ?";
               connection.query(actualizarPelicula, [peliculaId], (err) => {
                 if (err) {
@@ -84,7 +82,7 @@ export const cancelarReserva = (req, res) => {
                 res.json({ success: true, mensaje: "Reserva cancelada, película disponible nuevamente." });
               });
             } else {
-              // Sigue sin butacas disponibles
+
               res.json({ success: true, mensaje: "Reserva cancelada." });
             }
           });

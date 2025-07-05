@@ -29,7 +29,7 @@ function App() {
           </RutaAdmin>
         } />
         <Route path="/register" element={<Register />} />
-        <Route path="/seleccion-butacas/:id" element={
+        <Route path="/butacas/:id" element={
           <RutaPrivada>
             <SeleccionButacas />
           </RutaPrivada>
