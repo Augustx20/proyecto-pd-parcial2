@@ -38,67 +38,62 @@ function SeleccionButacas() {
   };
 
   const confirmarReserva = async () => {
-  try {
-    const token = localStorage.getItem("token");
+    try {
+      const token = localStorage.getItem("token");
 
-    const response = await fetch("http://localhost:5000/api/butacas/reservar", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        butacas: seleccionadas,  // Esta es tu lista correcta de IDs
-        peliculaId: id,          // El id de la película viene de useParams()
-      }),
-    });
+      const response = await fetch("http://localhost:5000/api/butacas/reservar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          butacas: seleccionadas,
+          peliculaId: id,
+        }),
+      });
 
-    if (response.ok) {
-      navigate("/reservas");
-    } else {
-      console.error("Error al confirmar reserva");
+      if (response.ok) {
+        navigate("/reservas");
+      } else {
+        console.error("Error al confirmar reserva");
+      }
+    } catch (err) {
+      console.error("Error:", err);
     }
-  } catch (err) {
-    console.error("Error:", err);
-  }
-};
+  };
 
   return (
-    <div style={{ padding: "2rem" }}>
+    <div className="container mt-4">
       <Navbar />
-      <h2>Selecciona tus Butacas</h2>
+      <h2 className="mb-4">Selecciona tus Butacas</h2>
 
-      <div style={{ display: "flex", flexWrap: "wrap", maxWidth: "300px" }}>
+      <div className="d-flex flex-wrap mb-3" style={{ maxWidth: "400px" }}>
         {butacas.map((butaca) => (
           <div
             key={butaca.id}
-            onClick={() => !butaca.ocupada && toggleButaca(butaca.id)}
+            className={`border d-flex align-items-center justify-content-center m-1`}
             style={{
               width: "40px",
               height: "40px",
-              margin: "5px",
               backgroundColor: butaca.ocupada
-                ? "red"
+                ? "#dc3545" // rojo ocupado
                 : seleccionadas.includes(butaca.id)
-                ? "green"
-                : "lightgray",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+                ? "#198754" // verde seleccionada
+                : "#f8f9fa", // gris claro disponible
+              color: "#000",
               cursor: butaca.ocupada ? "not-allowed" : "pointer",
-              border: "1px solid black",
             }}
+            onClick={() => !butaca.ocupada && toggleButaca(butaca.id)}
           >
             {butaca.numero_butaca}
           </div>
         ))}
       </div>
 
-      <p style={{ marginTop: "1rem" }}>
-        Butacas seleccionadas: {seleccionadas.length}
-      </p>
+      <p>Butacas seleccionadas: <strong>{seleccionadas.length}</strong></p>
 
-      <button onClick={confirmarReserva} style={{ marginTop: "1rem" }}>
+      <button className="btn btn-primary" onClick={confirmarReserva} disabled={seleccionadas.length === 0}>
         Confirmar Reserva
       </button>
     </div>

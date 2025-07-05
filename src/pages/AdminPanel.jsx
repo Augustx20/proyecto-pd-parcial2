@@ -27,40 +27,36 @@ function AdminPanel() {
   };
 
   const agregarPelicula = async () => {
-  try {
-    const token = localStorage.getItem("token");
+    try {
+      const token = localStorage.getItem("token");
 
-    console.log("Cantidad de butacas enviada:", cantidadButacas); // VERIFICACIÓN
+      const response = await fetch("http://localhost:5000/api/peliculas", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          titulo,
+          genero,
+          duracion: parseInt(duracion),
+          cantidad_butacas: parseInt(cantidadButacas),
+        }),
+      });
 
-    const response = await fetch("http://localhost:5000/api/peliculas", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        titulo,
-        genero,
-        duracion: parseInt(duracion),
-        cantidad_butacas: parseInt(cantidadButacas), // aseguramos que sea número
-      }),
-    });
-
-    if (response.ok) {
-      fetchPeliculas();
-      setTitulo("");
-      setGenero("");
-      setDuracion("");
-      setCantidadButacas("");
-    } else {
-      console.error("Error al agregar película");
+      if (response.ok) {
+        fetchPeliculas();
+        setTitulo("");
+        setGenero("");
+        setDuracion("");
+        setCantidadButacas("");
+      } else {
+        console.error("Error al agregar película");
+      }
+    } catch (err) {
+      console.error("Error:", err);
     }
-  } catch (err) {
-    console.error("Error:", err);
-  }
-};
-
-
+  };
 
   const eliminarPelicula = async (id) => {
     try {
@@ -80,43 +76,69 @@ function AdminPanel() {
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
+    <div className="container mt-4">
       <Navbar />
-      <h2>Panel de Administrador</h2>
 
-      <h3>Agregar Película</h3>
-      <input
-        type="text"
-        placeholder="Título"
-        value={titulo}
-        onChange={(e) => setTitulo(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Género"
-        value={genero}
-        onChange={(e) => setGenero(e.target.value)}
-      />
-      <input
-        type="number"
-        placeholder="Duración (min)"
-        value={duracion}
-        onChange={(e) => setDuracion(e.target.value)}
-      />
-      <input
-        type="number"
-        placeholder="Cantidad de butacas"
-        value={cantidadButacas}
-        onChange={(e) => setCantidadButacas(e.target.value)}
-      />
-      <button onClick={agregarPelicula}>Agregar</button>
+      <h2 className="mb-4">Panel de Administrador</h2>
 
-      <h3>Películas</h3>
-      <ul>
+      <div className="card mb-4">
+        <div className="card-body">
+          <h4 className="card-title">Agregar Película</h4>
+
+          <div className="mb-3">
+            <label className="form-label">Título</label>
+            <input
+              type="text"
+              className="form-control"
+              value={titulo}
+              onChange={(e) => setTitulo(e.target.value)}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Género</label>
+            <input
+              type="text"
+              className="form-control"
+              value={genero}
+              onChange={(e) => setGenero(e.target.value)}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Duración (minutos)</label>
+            <input
+              type="number"
+              className="form-control"
+              value={duracion}
+              onChange={(e) => setDuracion(e.target.value)}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Cantidad de Butacas</label>
+            <input
+              type="number"
+              className="form-control"
+              value={cantidadButacas}
+              onChange={(e) => setCantidadButacas(e.target.value)}
+            />
+          </div>
+
+          <button className="btn btn-primary" onClick={agregarPelicula}>
+            Agregar Película
+          </button>
+        </div>
+      </div>
+
+      <h4>Películas Cargadas</h4>
+      <ul className="list-group">
         {peliculas.map((peli) => (
-          <li key={peli.id}>
-            {peli.titulo} ({peli.genero}) - {peli.duracion} min
-            <button onClick={() => eliminarPelicula(peli.id)} style={{ marginLeft: "1rem" }}>
+          <li key={peli.id} className="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <strong>{peli.titulo}</strong> ({peli.genero}) - {peli.duracion} min
+            </div>
+            <button className="btn btn-danger btn-sm" onClick={() => eliminarPelicula(peli.id)}>
               Eliminar
             </button>
           </li>

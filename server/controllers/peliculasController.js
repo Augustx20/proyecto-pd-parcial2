@@ -48,7 +48,6 @@ export const agregarPelicula = (req, res) => {
   });
 };
 
-
 export const eliminarPelicula = (req, res) => {
   const id = req.params.id;
   const sql = "DELETE FROM peliculas WHERE id = ?";

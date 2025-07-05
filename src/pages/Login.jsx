@@ -17,9 +17,8 @@ function Login() {
         body: JSON.stringify({ username, password }),
       });
 
-      const data = await response.json();
-
       if (response.ok) {
+        const data = await response.json();
         localStorage.setItem("loggedUser", JSON.stringify(data.user));
         localStorage.setItem("token", data.token);
 
@@ -29,7 +28,7 @@ function Login() {
           navigate("/peliculas");
         }
       } else {
-        setError(data.message || "Usuario o contraseña incorrectos");
+        setError("Usuario o contraseña incorrectos");
       }
     } catch (err) {
       console.error(err);
@@ -38,30 +37,39 @@ function Login() {
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h2>Iniciar Sesión</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          <label>Usuario: </label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Contraseña: </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type="submit">Ingresar</button>
-      </form>
+    <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
+      <div className="card p-4 shadow" style={{ width: "100%", maxWidth: "400px" }}>
+        <h2 className="mb-4 text-center">Iniciar Sesión</h2>
+        <form onSubmit={handleLogin}>
+          <div className="mb-3">
+            <label className="form-label">Usuario</label>
+            <input
+              type="text"
+              className="form-control"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Contraseña</label>
+            <input
+              type="password"
+              className="form-control"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          {error && <div className="alert alert-danger">{error}</div>}
+
+          <button type="submit" className="btn btn-primary w-100">
+            Ingresar
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

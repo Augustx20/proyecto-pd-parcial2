@@ -13,9 +13,7 @@ function Reservas() {
       const token = localStorage.getItem("token");
 
       const response = await fetch("http://localhost:5000/api/reservas", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = await response.json();
@@ -25,15 +23,13 @@ function Reservas() {
     }
   };
 
-  const cancelarReserva = async (reservaId) => {
+  const cancelarReserva = async (id) => {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(`http://localhost:5000/api/reservas/${reservaId}`, {
+      const response = await fetch(`http://localhost:5000/api/reservas/${id}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.ok) {
@@ -45,17 +41,23 @@ function Reservas() {
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
+    <div className="container mt-4">
       <Navbar />
-      <h2>Mis Reservas</h2>
+      <h2 className="mb-4">Mis Reservas</h2>
+
       {reservas.length > 0 ? (
-        <ul>
+        <ul className="list-group">
           {reservas.map((reserva) => (
-            <li key={reserva.id}>
-              {reserva.titulo} - Butacas reservadas: {reserva.cantidad_butacas}
+            <li
+              key={reserva.id}
+              className="list-group-item d-flex justify-content-between align-items-center"
+            >
+              <div>
+                <strong>{reserva.titulo}</strong> - {reserva.cantidad_butacas} butacas
+              </div>
               <button
+                className="btn btn-danger btn-sm"
                 onClick={() => cancelarReserva(reserva.id)}
-                style={{ marginLeft: "1rem" }}
               >
                 Cancelar
               </button>
@@ -63,7 +65,7 @@ function Reservas() {
           ))}
         </ul>
       ) : (
-        <p>No realizaste ninguna reserva.</p>
+        <div className="alert alert-info">No realizaste ninguna reserva.</div>
       )}
     </div>
   );
